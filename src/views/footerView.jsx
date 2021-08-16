@@ -73,7 +73,7 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
       pluginRef.current = new HMSVirtualBackgroundPlugin("none");
     }
     await pluginRef.current.setBackground(getRandomVirtualBackground());
-    await hmsActions.addPluginToVideoTrack(pluginRef.current, 14);
+    await hmsActions.addPluginToVideoTrack(pluginRef.current, 15);
   }
 
   async function removePlugin() {
