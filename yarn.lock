@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"@100mslive/hms-noise-suppression@0.1.5-10e":
-  version "0.1.5-10e"
-  resolved "https://registry.yarnpkg.com/@100mslive/hms-noise-suppression/-/hms-noise-suppression-0.1.5-10e.tgz#14e419b9b49ea11bc6844576ba4af2592535a5cb"
-  integrity sha512-YDUKvY9OkG3qLyEHYbmkUAGZ8W/GsJpDhOrhdgxym421ehcIG4sPWEli1zhJoGz9K3qJejq43trd61E00wDTug==
-  dependencies:
-    rnnoise-wasm "git+https://github.com/100mslive/rnnoise-wasm"
-
 "@100mslive/hms-noise-suppression@0.1.5-12e":
   version "0.1.5-12e"
   resolved "https://registry.yarnpkg.com/@100mslive/hms-noise-suppression/-/hms-noise-suppression-0.1.5-12e.tgz#3a2ac769efc54f88b2bd51c27ab2cbc4f2c302a0"
@@ -10662,10 +10655,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
-
-"rnnoise-wasm@git+https://github.com/100mslive/rnnoise-wasm.git":
-  version "0.0.1"
-  resolved "git+https://github.com/100mslive/rnnoise-wasm.git#f710028341b553039fee7cd72febc0fb157f4fa1"
 
 rollup-plugin-babel@^4.3.3:
   version "4.4.0"

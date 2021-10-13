@@ -23,7 +23,7 @@
     "web-vitals": "^1.0.1"
   },
   "resolutions": {
-    "**/**/@100mslive/hms-noise-suppression": "0.1.5-10e"
+    "**/**/@100mslive/hms-noise-suppression": "0.1.5-12e"
   },
   "scripts": {
     "start": "craco start",
