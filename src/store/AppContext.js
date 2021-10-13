@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   useHMSActions,
   useHMSStore,
   selectLocalPeer,
-  selectIsConnectedToRoom,
   selectAvailableRoleNames,
   selectRolesMap,
 } from "@100mslive/hms-video-react";
@@ -34,9 +33,8 @@ const initialLoginInfo = {
 
 const defaultTokenEndpoint = process.env
   .REACT_APP_TOKEN_GENERATION_ENDPOINT_DOMAIN
-  ? `${getBackendEndpoint()}${
-      process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT_DOMAIN
-    }/`
+  ? `${getBackendEndpoint()}${process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT_DOMAIN
+  }/`
   : process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
 
 const envPolicyConfig = JSON.parse(process.env.REACT_APP_POLICY_CONFIG || "{}");
@@ -57,7 +55,6 @@ const AppContextProvider = ({
 }) => {
   const hmsActions = useHMSActions();
   const localPeer = useHMSStore(selectLocalPeer);
-  const isConnected = useHMSStore(selectIsConnectedToRoom);
   const roleNames = useHMSStore(selectAvailableRoleNames);
   const rolesMap = useHMSStore(selectRolesMap);
   const appPolicyConfig = useMemo(
@@ -70,12 +67,8 @@ const AppContextProvider = ({
     loginInfo: initialLoginInfo,
     maxTileCount: 9,
     localAppPolicyConfig: {},
+    subscribedNotifications: { "PEER_JOINED": false, "PEER_LEFT": false, "NEW_MESSAGE": true, "ERROR": true }
   });
-
-  const customLeave = useCallback(() => {
-    console.log("User is leaving the room");
-    hmsActions.leave();
-  }, [hmsActions]);
 
   useEffect(() => {
     function resetHeight() {
@@ -123,16 +116,19 @@ const AppContextProvider = ({
   const deepSetAppPolicyConfig = config =>
     setState(prevState => ({ ...prevState, localAppPolicyConfig: config }));
 
+  const deepSetSubscribedNotifications = notification => {
+    setState(prevState => ({ ...prevState, subscribedNotifications: { ...prevState.subscribedNotifications, [notification.type]: notification.isSubscribed }}));
+  };
   return (
     <AppContext.Provider
       value={{
         setLoginInfo: deepSetLoginInfo,
         setMaxTileCount: deepSetMaxTiles,
+        setSubscribedNotifications: deepSetSubscribedNotifications,
         loginInfo: state.loginInfo,
         maxTileCount: state.maxTileCount,
+        subscribedNotifications: state.subscribedNotifications,
         appPolicyConfig: state.localAppPolicyConfig,
-        isConnected: isConnected,
-        leave: customLeave,
         tokenEndpoint,
         audioPlaylist,
         videoPlaylist,
