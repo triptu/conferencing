@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "private": true,
   "dependencies": {
-    "@100mslive/hms-noise-suppression": "0.1.5",
+    "@100mslive/hms-noise-suppression": "0.1.5-10e",
     "@100mslive/hms-video": "^0.1.0",
     "@100mslive/hms-video-react": "^0.3.89",
     "@100mslive/hms-virtual-background": "^1.3.2",
@@ -20,8 +20,10 @@
     "react-toastify": "^7.0.4",
     "screenfull": "^5.1.0",
     "uuid": "^8.3.2",
-    "web-vitals": "^1.0.1",
-    "rnnoise-wasm": "github:jitsi/rnnoise-wasm#566a16885897704d6e6d67a1d5ac5d39781db2af"
+    "web-vitals": "^1.0.1"
+  },
+  "resolutions": {
+    "**/**/@100mslive/hms-noise-suppression": "0.1.5-10e"
   },
   "scripts": {
     "start": "craco start",
