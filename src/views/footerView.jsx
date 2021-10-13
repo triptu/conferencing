@@ -1,20 +1,11 @@
-import React, {
-  useState,
-  useCallback,
-  useContext,
-  useRef,
-  Fragment,
-} from "react";
+import { useState, useCallback, useContext, useRef } from "react";
 import {
   useHMSStore,
   ControlBar,
   ContextMenu,
   ContextMenuItem,
+  AudioPlaylist,
   HangUpIcon,
-  MicOffIcon,
-  MicOnIcon,
-  CamOffIcon,
-  CamOnIcon,
   VirtualBackgroundIcon,
   NoiseSupressionIcon,
   Button,
@@ -22,19 +13,22 @@ import {
   ChatIcon,
   ChatUnreadIcon,
   MusicIcon,
+  VideoPlaylistIcon,
   VerticalDivider,
   MessageModal,
   useHMSActions,
   selectIsLocalScreenShared,
-  selectIsLocalAudioEnabled,
-  selectIsLocalVideoDisplayEnabled,
   selectUnreadHMSMessagesCount,
   isMobileDevice,
   selectIsAllowedToPublish,
   selectIsLocalVideoPluginPresent,
   selectIsLocalAudioPluginPresent,
   selectPermissions,
-  selectPeerSharingAudio,
+  selectLocalPeer,
+  selectScreenSharesByPeerId,
+  Text,
+  selectVideoPlaylist,
+  VideoPlaylist,
 } from "@100mslive/hms-video-react";
 import { useHistory, useParams } from "react-router-dom";
 import { HMSVirtualBackgroundPlugin } from "@100mslive/hms-virtual-background";
@@ -42,11 +36,14 @@ import { HMSNoiseSuppressionPlugin } from "@100mslive/hms-noise-suppression";
 import { AppContext } from "../store/AppContext";
 import { getRandomVirtualBackground } from "../common/utils";
 import { MoreSettings } from "./components/MoreSettings";
+import { AudioVideoToggle } from "./components/AudioVideoToggle";
 
 export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
   const isScreenShared = useHMSStore(selectIsLocalScreenShared);
-  const isLocalAudioEnabled = useHMSStore(selectIsLocalAudioEnabled);
-  const isLocalVideoEnabled = useHMSStore(selectIsLocalVideoDisplayEnabled);
+  const localPeer = useHMSStore(selectLocalPeer);
+  const { video, audio } = useHMSStore(
+    selectScreenSharesByPeerId(localPeer?.id)
+  );
   const countUnreadMessages = useHMSStore(selectUnreadHMSMessagesCount);
   const isVBPresent = useHMSStore(
     selectIsLocalVideoPluginPresent("@100mslive/hms-virtual-background")
@@ -59,13 +56,14 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
   const audiopluginRef = useRef(null);
   const isAllowedToPublish = useHMSStore(selectIsAllowedToPublish);
   const permissions = useHMSStore(selectPermissions);
-  const peer = useHMSStore(selectPeerSharingAudio);
+  const activeVideoPlaylist = useHMSStore(selectVideoPlaylist.selection).id;
   const [showEndRoomModal, setShowEndRoomModal] = useState(false);
+  const [shareAudioModal, setShareAudioModal] = useState(false);
   const [lockRoom, setLockRoom] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
   const isNoiseSuppression = useHMSStore(
-      selectIsLocalAudioPluginPresent("@100mslive/hms-noise-suppression")
+    selectIsLocalAudioPluginPresent("@100mslive/hms-noise-suppression")
   );
   const initialModalProps = {
     show: false,
@@ -82,11 +80,13 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
 
   async function addNoiseSuppressionPlugin() {
     createNoiseSuppresionPlugin();
-
-    audiopluginRef.current.setNoiseSuppression(!isNoiseSuppression);
-    await hmsActions.addPluginToAudioTrack(audiopluginRef.current);
+    try {
+      await hmsActions.addPluginToAudioTrack(audiopluginRef.current);
+    } catch (err) {
+      console.error("add noise suppression plugin failed", err);
+    }
   }
-  //
+
   async function removeNoiseSuppressionPlugin() {
     if (audiopluginRef.current) {
       await hmsActions.removePluginFromAudioTrack(audiopluginRef.current);
@@ -105,7 +105,11 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
     createVBPlugin();
     await pluginRef.current.setBackground(getRandomVirtualBackground());
     //Running VB on every alternate frame rate for optimized cpu usage
-    await hmsActions.addPluginToVideoTrack(pluginRef.current, 15);
+    try {
+      await hmsActions.addPluginToVideoTrack(pluginRef.current, 15);
+    } catch (err) {
+      console.error("add virtual background plugin failed", err);
+    }
   }
 
   async function removePlugin() {
@@ -120,24 +124,10 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
   }
 
   function handleNoiseSuppression() {
-    isNoiseSuppression ? removeNoiseSuppressionPlugin() : addNoiseSuppressionPlugin();
+    isNoiseSuppression
+      ? removeNoiseSuppressionPlugin()
+      : addNoiseSuppressionPlugin();
   }
-
-  const toggleAudio = useCallback(async () => {
-    try {
-      await hmsActions.setLocalAudioEnabled(!isLocalAudioEnabled);
-    } catch (err) {
-      console.error("Cannot toggle audio", err);
-    }
-  }, [hmsActions, isLocalAudioEnabled]);
-
-  const toggleVideo = useCallback(async () => {
-    try {
-      await hmsActions.setLocalVideoEnabled(!isLocalVideoEnabled);
-    } catch (err) {
-      console.error("Cannot toggle video", err);
-    }
-  }, [hmsActions, isLocalVideoEnabled]);
 
   const toggleScreenShare = useCallback(
     async (enable, audioOnly = false) => {
@@ -157,7 +147,17 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
           // when share audio not selected with audioOnly screenshare
           setErrorModal({
             show: true,
-            title: "Screen share error",
+            title: "Screenshare error",
+            body: error.message,
+          });
+        } else if (
+          error.message &&
+          error.message === "Cannot share multiple screens"
+        ) {
+          // when share audio not selected with audioOnly screenshare
+          setErrorModal({
+            show: true,
+            title: "Screenshare error",
             body: error.message,
           });
         }
@@ -176,6 +176,7 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
   }
 
   const leftComponents = [];
+  const isAudioScreenshare = !video && !!audio;
 
   if (!isMobileDevice()) {
     //creating VB button for only web
@@ -189,8 +190,14 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
           variant="no-fill"
           iconSize="md"
           shape="rectangle"
-          active={peer && peer.isLocal}
-          onClick={() => toggleScreenShare(!(peer && peer.isLocal), true)}
+          active={isAudioScreenshare}
+          onClick={() => {
+            if (isAudioScreenshare) {
+              toggleScreenShare(false, true);
+            } else {
+              setShareAudioModal(true);
+            }
+          }}
         >
           <MusicIcon />
         </Button>,
@@ -210,6 +217,16 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
         {countUnreadMessages === 0 ? <ChatIcon /> : <ChatUnreadIcon />}
       </Button>
     );
+    isAllowedToPublish.screen &&
+      leftComponents.push(<AudioPlaylist key="audioPlaylist" />);
+    isAllowedToPublish.screen &&
+      leftComponents.push(
+        <VideoPlaylist
+          key="videoPlaylist"
+          trigger={<VideoPlaylistIcon key="videoPlaylistIcon" />}
+          active={activeVideoPlaylist}
+        />
+      );
   }
 
   const isPublishing = isAllowedToPublish.video || isAllowedToPublish.audio;
@@ -219,34 +236,7 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
       <ControlBar
         leftComponents={leftComponents}
         centerComponents={[
-          isAllowedToPublish.audio ? (
-            <Button
-              iconOnly
-              variant="no-fill"
-              iconSize="md"
-              classes={{ root: "mx-2" }}
-              shape="rectangle"
-              active={!isLocalAudioEnabled}
-              onClick={toggleAudio}
-              key="toggleAudio"
-            >
-              {!isLocalAudioEnabled ? <MicOffIcon /> : <MicOnIcon />}
-            </Button>
-          ) : null,
-          isAllowedToPublish.video ? (
-            <Button
-              iconOnly
-              variant="no-fill"
-              iconSize="md"
-              classes={{ root: "mx-2" }}
-              shape="rectangle"
-              active={!isLocalVideoEnabled}
-              onClick={toggleVideo}
-              key="toggleVideo"
-            >
-              {!isLocalVideoEnabled ? <CamOffIcon /> : <CamOnIcon />}
-            </Button>
-          ) : null,
+          <AudioVideoToggle key="audioVideoToggle" />,
           isAllowedToPublish.screen && !isMobileDevice() ? (
             <Button
               key="toggleScreenShare"
@@ -274,21 +264,25 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
             </Button>
           ) : null,
           isAllowedToPublish.audio && audiopluginRef.current?.isSupported() ? (
-              <Button
-                  iconOnly
-                  variant="no-fill"
-                  shape="rectangle"
-                  active={isNoiseSuppression}
-                  onClick={handleNoiseSuppression}
-                  key={4}
-              >
-                <NoiseSupressionIcon />
-              </Button>
+            <Button
+              iconOnly
+              variant="no-fill"
+              shape="rectangle"
+              active={isNoiseSuppression}
+              onClick={handleNoiseSuppression}
+              key="noiseSuppression"
+            >
+              <NoiseSupressionIcon />
+            </Button>
           ) : null,
-          isPublishing && <span key={5} className="mx-2 md:mx-3"></span>,
-          isPublishing && <VerticalDivider key={6} />,
-          isPublishing && <span key={7} className="mx-2 md:mx-3"></span>,
-          <MoreSettings key={8} />,
+          isPublishing && (
+            <span key="SettingsLeftSpace" className="mx-2 md:mx-3"></span>
+          ),
+          isPublishing && <VerticalDivider key="SettingsDivider" />,
+          isPublishing && (
+            <span key="SettingsRightSpace" className="mx-2 md:mx-3"></span>
+          ),
+          <MoreSettings key="MoreSettings" />,
         ]}
         rightComponents={[
           <ContextMenu
@@ -374,11 +368,7 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
             )}
           </ContextMenu>,
         ]}
-        audioButtonOnClick={toggleAudio}
-        videoButtonOnClick={toggleVideo}
         backgroundButtonOnClick={handleVirtualBackground}
-        isAudioMuted={!isLocalAudioEnabled}
-        isVideoMuted={!isLocalVideoEnabled}
         isBackgroundEnabled={isVBPresent}
       />
       <MessageModal
@@ -426,6 +416,41 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
             </Button>
           </div>
         }
+      />
+      <MessageModal
+        show={shareAudioModal}
+        onClose={() => {
+          setShareAudioModal(false);
+        }}
+        title="How to play music"
+        body={
+          <>
+            <Text variant="body" classes={{ root: "text-xs" }}>
+              To share your music, select ‘Chrome Tab’ option in the share
+              screen window, then select the tab in which music will be played,
+              then click the ‘Share audio’ button and click the ‘Share’ button
+              on the right to start sharing your music.
+            </Text>
+            <img
+              src="/share-audio.gif"
+              className="mt-4"
+              alt="select ‘Chrome Tab’ option in the share screen
+          window, then click the ‘Share audio’ button"
+            ></img>
+          </>
+        }
+        footer={
+          <Button
+            variant="emphasized"
+            onClick={() => {
+              setShareAudioModal(false);
+              toggleScreenShare(!isAudioScreenshare, true);
+            }}
+          >
+            Continue
+          </Button>
+        }
+        classes={{ footer: "justify-center", header: "mb-2" }}
       />
     </>
   ) : null;
