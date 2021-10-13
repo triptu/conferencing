@@ -9,6 +9,18 @@
   dependencies:
     rnnoise-wasm "git+https://github.com/100mslive/rnnoise-wasm"
 
+"@100mslive/hms-noise-suppression@0.1.5-12e":
+  version "0.1.5-12e"
+  resolved "https://registry.yarnpkg.com/@100mslive/hms-noise-suppression/-/hms-noise-suppression-0.1.5-12e.tgz#3a2ac769efc54f88b2bd51c27ab2cbc4f2c302a0"
+  integrity sha512-C18Cf7avdJS+N5O/oFeHiotrwSCOWGwb5cFOQAcNzqi7j1GU00oL3zKys1s8AxCBIOhcfkfOjtFw01bq7ceeOg==
+  dependencies:
+    "@100mslive/hms-rnnoise-wasm" "0.0.1"
+
+"@100mslive/hms-rnnoise-wasm@0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@100mslive/hms-rnnoise-wasm/-/hms-rnnoise-wasm-0.0.1.tgz#5973e1d12b11a1ea0616a142dd46f4bf4ab47bb3"
+  integrity sha512-teQa/632435kHDSvwb+IHsXoW65R/4auw/ApEK70N6Zr81/VSGpIGZTspcWwmHOejWza9xgoBEU3aXJnp1PbpQ==
+
 "@100mslive/hms-video-react@^0.3.89":
   version "0.3.89"
   resolved "https://registry.yarnpkg.com/@100mslive/hms-video-react/-/hms-video-react-0.3.89.tgz#5eba4f759ddde589cefbf711df665030ed7aac31"
@@ -10653,7 +10665,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
 
 "rnnoise-wasm@git+https://github.com/100mslive/rnnoise-wasm.git":
   version "0.0.1"
-  resolved "git+https://github.com/100mslive/rnnoise-wasm.git#7285ee5fa2f6b23903a1b959653de45efe2af6ef"
+  resolved "git+https://github.com/100mslive/rnnoise-wasm.git#f710028341b553039fee7cd72febc0fb157f4fa1"
 
 rollup-plugin-babel@^4.3.3:
   version "4.4.0"
