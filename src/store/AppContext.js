@@ -31,11 +31,7 @@ const initialLoginInfo = {
   selectedAudioOutput: "default",
 };
 
-const defaultTokenEndpoint = process.env
-  .REACT_APP_TOKEN_GENERATION_ENDPOINT_DOMAIN
-  ? `${getBackendEndpoint()}${process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT_DOMAIN
-  }/`
-  : process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
+const defaultTokenEndpoint =  process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
 
   console.log(defaultTokenEndpoint);
 
