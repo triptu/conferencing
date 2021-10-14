@@ -28,6 +28,7 @@ const defaultTokenEndpoint = process.env
     }/`
   : process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
 
+  console.log(defaultTokenEndpoint);
 const envPolicyConfig = JSON.parse(process.env.REACT_APP_POLICY_CONFIG || "{}");
 
 export function EdtechComponent({
