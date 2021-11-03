@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@100mslive/hms-noise-suppression@0.1.5-14e":
-  version "0.1.5-14e"
-  resolved "https://registry.yarnpkg.com/@100mslive/hms-noise-suppression/-/hms-noise-suppression-0.1.5-14e.tgz#125dfcd3e32c56e8ed0738dbf2547e64a159ed5c"
-  integrity sha512-Jysv+tapADlDnQmCaqioKVxIySJ3ekBugf/EriSuRbnihAQvbP0VkpU0QjQideXVgpTbgS3J1XuYK8nvCh62XQ==
+"@100mslive/hms-noise-suppression@0.1.5-17e":
+  version "0.1.5-17e"
+  resolved "https://registry.yarnpkg.com/@100mslive/hms-noise-suppression/-/hms-noise-suppression-0.1.5-17e.tgz#8aeafa565b6ac17ed2128d307cad1bfe9485f840"
+  integrity sha512-3X0YZuGaXF9xnrCUC90h3b+DubYKZJRTytmvklZuYDqxl4Jrb9vfFdziplJ+xPPEjdpW1JV8ULUOi3hdBZjvvQ==
 
 "@100mslive/hms-video-react@^0.3.93":
   version "0.3.97"
@@ -1844,6 +1844,7 @@
     loader-utils "^2.0.0"
 
 "@tailwindcss/postcss7-compat@^2.1.0", "tailwindcss@npm:@tailwindcss/postcss7-compat@^2.1.2", "tailwindcss@npm:@tailwindcss/postcss7-compat@^2.1.4":
+  name tailwindcss
   version "2.2.17"
   resolved "https://registry.yarnpkg.com/@tailwindcss/postcss7-compat/-/postcss7-compat-2.2.17.tgz#dc78f3880a2af84163150ff426a39e42b9ae8922"
   integrity sha512-3h2svqQAqYHxRZ1KjsJjZOVTQ04m29LjfrLjXyZZEJuvUuJN+BCIF9GI8vhE1s0plS0mogd6E6YLg6mu4Wv/Vw==
