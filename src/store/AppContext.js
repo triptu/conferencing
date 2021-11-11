@@ -31,10 +31,10 @@ const initialLoginInfo = {
   selectedAudioInput: "default",
   selectedAudioOutput: "default",
 };
-
-const defaultTokenEndpoint =  process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
-
+const defaultTokenEndpoint ="https://qa-in2.100ms.live/hmsapi/company.qa-app.100ms.live/"
+  console.log(defaultTokenEndpoint);
 const envPolicyConfig = JSON.parse(process.env.REACT_APP_POLICY_CONFIG || "{}");
+
 const envAudioPlaylist = JSON.parse(
   process.env.REACT_APP_AUDIO_PLAYLIST || "[]"
 );
