@@ -95,7 +95,7 @@ export const ConferenceFooter = ({ isChatOpen, toggleChat }) => {
     await pluginRef.current.setBackground(getRandomVirtualBackground());
     //Running VB on every alternate frame rate for optimized cpu usage
     try {
-      await hmsActions.addPluginToVideoTrack(pluginRef.current, 15);
+      await hmsActions.addPluginToVideoTrack(pluginRef.current, 10);
     } catch (err) {
       console.error("add virtual background plugin failed", err);
     }
