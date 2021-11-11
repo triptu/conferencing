@@ -21,9 +21,12 @@ import {
 } from "./services/tokenService";
 import { hmsToast } from "./views/components/notifications/hms-toast";
 
-const defaultTokenEndpoint = process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
 
+const defaultTokenEndpoint = "https://qa-in2.100ms.live/hmsapi/company.qa-app.100ms.live/"//process.env.REACT_APP_TOKEN_GENERATION_ENDPOINT;
+
+  console.log(defaultTokenEndpoint);
 const envPolicyConfig = JSON.parse(process.env.REACT_APP_POLICY_CONFIG || "{}");
+
 
 export function EdtechComponent({
   roomId = "",
