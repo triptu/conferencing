@@ -1,4 +1,26 @@
 import LogRocket from "logrocket";
+import { identify } from "zipyai";
+
+const zipyKey = process.env.REACT_APP_ZIPY_KEY;
+export const setUpZipy = ({ localPeer, roomId, sessionId }) => {
+  if (!zipyKey) {
+    return;
+  }
+
+  let domain;
+  if (typeof window !== "undefined") {
+    domain = window.location.hostname;
+  }
+
+  identify(localPeer.id, {
+    firstName: localPeer.name,
+    customerName: domain,
+    email: domain,
+    role: localPeer.roleName,
+    sessionId,
+    roomId,
+  });
+};
 
 const logRocketKey = process.env.REACT_APP_LOGROCKET_ID;
 let logRocketInitialised;
@@ -131,8 +153,9 @@ export const normalizeAppPolicyConfig = (
       subscribedRoles.length === 0 ||
       (subscribedRoles.length === 1 && subscribedRoles[0] === roleName);
     if (!newConfig[roleName].center) {
-      const publishingRoleNames = roleNames.filter(roleName =>
-        canPublishAV(rolesMap[roleName])
+      const publishingRoleNames = roleNames.filter(
+        roleName =>
+          canPublishAV(rolesMap[roleName]) && subscribedRoles.includes(roleName)
       );
       if (isNotSubscribingOrSubscribingToSelf) {
         newConfig[roleName].center = [roleName];
