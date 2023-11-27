@@ -35,6 +35,7 @@
       }
     ],
     "import/first": "error",
+    "no-nested-ternary": 1,
     "import/no-duplicates": "error",
     "simple-import-sort/imports": [
       "error",
@@ -47,7 +48,7 @@
             // Internal packages.
             "^@100mslive/react-sdk",
             "^@100mslive/react-icons",
-            "^@100mslive/react-ui",
+            "^@100mslive/roomkit-react",
             // Side effect imports.
             "^\\u0000",
             

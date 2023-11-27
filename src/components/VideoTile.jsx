@@ -20,7 +20,7 @@ import {
   useBorderAudioLevel,
   Video,
   VideoTileStats,
-} from "@100mslive/react-ui";
+} from "@100mslive/roomkit-react";
 import TileConnection from "./Connection/TileConnection";
 import { getVideoTileLabel } from "./peerTileUtils";
 import TileMenu from "./TileMenu";
@@ -33,7 +33,6 @@ const Tile = ({
   trackId,
   width,
   height,
-  visible = true,
   objectFit = "cover",
   rootCSS = {},
   containerCSS = {},
@@ -77,6 +76,7 @@ const Tile = ({
     }
     return "large";
   }, [width, height]);
+
   return (
     <StyledVideoTile.Root
       css={{
@@ -87,7 +87,6 @@ const Tile = ({
           tileOffset: headlessConfig?.tileOffset,
           hideAudioLevel: headlessConfig?.hideAudioLevel,
         }),
-        visibility: visible ? "visible" : "hidden",
         ...rootCSS,
       }}
       data-testid={`participant_tile_${peerName}`}
